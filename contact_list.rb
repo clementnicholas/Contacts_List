@@ -19,8 +19,12 @@ require_relative 'contact_database'
     Contact.all
     puts "----------"
     puts "#{ContactDatabase.read_list.size} TOTAL CONTACTS"
-  when 'show'
-  when 'find'
+  when /^show\s\d*/
+    id_input = user_input.slice(/\d*\d$/)
+    puts Contact.show(id_input)
+  when /^find.*/
+    search_term = user_input.slice(/\s.*/).sub(/\s/, '')
+    puts Contact.find(search_term)
   when 'help'
     puts "Here is a list of available commands:
     new - Create a new contact
