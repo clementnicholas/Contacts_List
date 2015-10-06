@@ -2,9 +2,9 @@
 require 'csv'
 
 class ContactDatabase
-  @@filename = 'contacts.csv'
-  $filedata = []
 
+  @@filename = 'contacts.csv'
+  
   def intialize
     
   end

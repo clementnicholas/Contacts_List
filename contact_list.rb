@@ -3,7 +3,7 @@ require_relative 'contact_database'
 
 # TODO: Implement command line interaction
 # This should be the only file where you use puts and gets
-p ContactDatabase.read_list
+
 
   puts "Enter a command:"
   user_input = gets.chomp.downcase
@@ -16,6 +16,9 @@ p ContactDatabase.read_list
     input_email = gets.chomp
     new_contact = Contact.create(input_name, input_email)
   when 'list'
+    Contact.all
+    puts "----------"
+    puts "#{ContactDatabase.read_list.size} TOTAL CONTACTS"
   when 'show'
   when 'find'
   when 'help'

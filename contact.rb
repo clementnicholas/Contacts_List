@@ -10,22 +10,25 @@ class Contact
   end
  
   def to_s
-
+    # 
   end
  
+
+
   ## Class Methods
   class << self
+
+    @@id = 0
+
     def create(name, email)
       # TODO: Will initialize a contact as well as add it to the list of contacts
+      @all_contacts = ContactDatabase.read_list
+      @@id += @all_contacts.size + 1 
       @contact_array = []
+      @contact_array << @@id
       @contact_array << name
       @contact_array << email
-      # p @contact_array.inspect
       ContactDatabase.write_to_list(@contact_array)
-      @all_contacts = ContactDatabase.read_list
-      @all_contacts.each do |contact|
-        puts $. if contact[0] == name 
-      end
     end
  
     def find(term)
@@ -34,8 +37,18 @@ class Contact
  
     def all
       # TODO: Return the list of contacts, as is
+      printed_contacts = ContactDatabase.read_list
+      printed_contacts.each do |row|
+        add_data(row)
+      end
     end
-    
+
+    def add_data(obj)
+      string = ''
+      string << "#{obj[0]}: #{obj[1]} (#{obj[2]})"
+      puts string
+    end
+
     def show(id)
       # TODO: Show a contact, based on ID
     end
