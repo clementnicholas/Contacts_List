@@ -1,108 +1,115 @@
 require 'pry'
+require 'pg'
 
 class Contact
- 
-  attr_accessor :name, :email
 
-  def initialize(name, email)
+  def self.connection
+    puts 'Connecting to the database...'
+      conn = PG.connect(
+        host: 'localhost',
+        dbname: 'contacts',
+        user: 'development',
+        password: 'development'
+        )
+    conn
+  end
+ 
+  attr_accessor :first_name, :last_name, :email, :id
+
+  def initialize(first_name, last_name, email)
     # TODO: assign local variables to instance variables
-    @name = name
+    @first_name = first_name
+    @last_name = last_name
     @email = email
-  end
- 
-  def to_s
-    # 
+    @id = nil
   end
 
-
  
+  def save
 
+    if @id
+      update_contact = "UPDATE contacts SET firstname='#{@first_name}', lastname='#{@last_name}', email='#{@email}'
+      WHERE id='#{@id}'"
+      Contact.connection.exec_params(update_contact)
+    else  
+      insert_contact = "INSERT INTO contacts (firstname, lastname, email) VALUES
+      ('#{@first_name}', '#{@last_name}', '#{@email}')"
+      Contact.connection.exec_params(insert_contact)
 
-  ## Class Methods
-  class << self
-
-
-
-    @@id = 0
-    @@found = false
-    @@output = []
-
-    def add_to_output(obj)
-      if eval(obj[3]).empty?
-        string_to_add = "ID: #{obj[0]} \nNAME: #{obj[1]} \nEMAIL: #{obj[2]}"
-      else  
-        string_to_add = "ID: #{obj[0]} \nNAME: #{obj[1]} \nEMAIL: #{obj[2]} \n#{print_numbers(obj[3])}"
+      id_hashes = Contact.connection.exec_params('SELECT id FROM contacts').map do |result|
+        result
       end
-      @@output << string_to_add if @@output.include?(string_to_add) == false
-      @@found = true
+      last_hash = id_hashes[-1]
+      puts @id = last_hash['id']
     end
+  end  
 
-    def create(name, email, phone_numbers)
-      # TODO: Will initialize a contact as well as add it to the list of contacts
-      @all_contacts = ContactDatabase.read_list
-      @@id += @all_contacts.size + 1 
-      @contact_array = []
-      @contact_array << @@id
-      @contact_array << name
-      @contact_array << email
-      @contact_array << phone_numbers
-      ContactDatabase.write_to_list(@contact_array)
-      "Contact with ID: #{@@id} created."
+  def self.all
+    contacts = []
+    results = Contact.connection.exec_params('SELECT * FROM contacts')
+    results.each do |result|
+      contacts << result
     end
- 
-    def find(term)
-      # TODO: Will find and return contacts that contain the term in the first name, last name or email
-      ContactDatabase.read_list.each do |row|
-        row.each do |str|
-          if str.include?(term) 
-            add_to_output(row)
-          end
-        end
+    contacts
+  end
+
+  def destroy
+    Contact.connection.exec_params('DELETE * FROM contacts')
+  end
+
+
+  def self.find(id_number)
+    results = Contact.connection.exec_params('SELECT * FROM contacts')
+    contact_array = []
+    results.each do |result|
+      if result["id"] == id_number.to_s
+        contact_array << result
       end
-      @@found == false ? contact_not_found : @@output
-    end
- 
-    def all
-      # TODO: Return the list of contacts, as is
-      printed_contacts = ContactDatabase.read_list
-      printed_contacts.each do |row|
-        show_data(row)
+    end 
+    contact_array
+  end
+
+  def self.find_all_by_lastname(name)
+    results = Contact.connection.exec_params('SELECT * FROM contacts')
+    contact_array = []
+    results.each do |result|
+      if result["lastname"] == name.to_s
+        contact_array << result
       end
-    end
+    end 
+    contact_array
+  end
 
-    def print_numbers(obj)
-      @numbers_list = []
-      eval(obj).each do |key, value|
-        @numbers_list << "#{key.to_s.upcase}: #{value}"
+  def self.find_all_by_firstname(name)
+    results = Contact.connection.exec_params('SELECT * FROM contacts')
+    contact_array = []
+    results.each do |result|
+      if result["firstname"] == name.to_s
+        contact_array << result
       end
-      @numbers_list.join(' ')
-    end
+    end 
+    contact_array
+  end
 
-    def show_data(obj)
-      string = ''
-      string << "#{obj[0]}: #{obj[1]} (#{obj[2]}) #{print_numbers(obj[3])}" 
-      puts string
-    end
-
-    def contact_not_found
-      "Contact not found. Please try another search."
-    end
-
-    def declare_invalid
-      "Contact not found. Please enter a valid ID."
-    end
-
-    def show(id)
-      # TODO: Show a contact, based on ID
-      contacts = ContactDatabase.read_list
-      contact = contacts.find do |row| 
-        if row[0] == id
-          add_to_output(row)
-        end
+  def self.find_by_email(email)
+    results = Contact.connection.exec_params('SELECT * FROM contacts')
+    contact_array = []
+    results.each do |result|
+      if result["email"] == email.to_s
+        contact_array << result
       end
-      @@found == false ? declare_invalid : @@output
-    end
-    
+    end 
+    contact_array
   end
  
+  # puts self.all
+
+  puts Contact.find(5)  
+  puts Contact.find_all_by_lastname('woods')
+  contact = Contact.new("Nick", "Jordan", "nickjordan")
+  contact.save
+  puts Contact.all
+  contact.destroy
+  puts Contact.all
 end
+

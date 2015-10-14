@@ -4,7 +4,7 @@ require 'csv'
 class ContactDatabase
 
   @@filename = 'contacts.csv'
-  
+
   def intialize
     
   end
