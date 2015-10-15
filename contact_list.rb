@@ -43,11 +43,9 @@ puts "Welcome to your contact list. What would you like to do:
 >>> all -- List all contacts
 >>> delete -- Delete a contact
 >>> find -- Find a contact by id_input
->>> search -- Search for a contact by name
 
 Please Enter a choice: "
 user_input = gets.chomp
-
 
   case user_input
   when 'new'
@@ -72,14 +70,25 @@ user_input = gets.chomp
     end
 
   when 'update'
-  #update contact  
+    puts "Enter a contact id:"
+    contact_id = gets.chomp
+    contact = Contact.find(contact_id)
+    puts "Enter a new first name:"
+    firstname = gets.chomp
+    contact.update(first_name: firstname)
 
   when 'delete'
-  #destroy  
-  when 'search'
-  #search by name 
+    puts "Enter a contact id:"
+    Contact.delete(gets.chomp) 
+
   when 'find'
-  #find by id
+    puts "Find by ID: "
+    id = gets.chomp.to_i
+    if Contact.exists?(id: id) 
+      Contact.find(id).print
+    else
+      puts "No Contact with ID# #{id}."
+    end
   end
 
 
