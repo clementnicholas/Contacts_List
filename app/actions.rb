@@ -24,6 +24,7 @@ get '/contacts/:id' do |id|
 end
 
 put '/contacts/:id' do |id|
-  contact = Contact.find(params[:id]).update(firstname: params[:firstname], lastname: params[:lastname], email: params[:email])
+  contact = Contact.find(params[:id])
+  contact.update(firstname: params[:firstname], lastname: params[:lastname], email: params[:email])
   halt 200, {'Content-Type' => 'application/json'}, contact.to_json
 end

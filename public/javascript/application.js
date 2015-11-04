@@ -12,6 +12,7 @@ $(function() {
   $(createButton).appendTo(contactListDiv);
   var formDiv = $("<div>").attr('class', 'formDiv').appendTo(contactListDiv);
 
+
   $.ajax({
     url: '/contacts',
     method: 'get',
@@ -24,7 +25,7 @@ $(function() {
   }
 
   function addContactToList(contact) {
-    var contactRow = $('<tr>').data('id', contact.id).appendTo('#contactListTable');
+    var contactRow = $('<tr>').data('id', contact.id).attr('id', 'contact' + contact.id).appendTo('#contactListTable');
     $('<td>').text(contact.firstname + ' ' + contact.lastname).attr('class','name').appendTo(contactRow); 
     $('<td>').text(contact.email).attr('class', 'email').appendTo(contactRow);
     $('<td>').html('<button class="delete">').appendTo(contactRow);
@@ -41,11 +42,12 @@ $(function() {
   $('<label>').text('Email: ').appendTo(newContactForm);
   $('<input>').attr({type:'text', name:'email'}).appendTo(newContactForm);
   $('<button>').attr('type', 'submit').text('Submit').appendTo(newContactForm);
+  var formDiv = $("<div>").attr('class', 'formDiv').appendTo(contactListDiv);
   $(newContactForm).appendTo(formDiv).hide();
   
 
   var editContactForm = $("<form method='put'>").attr('class', 'edit');
-  function buildEditContactForm(contact) {
+  function buildEditContactForm(contact) { 
     $('<label>').text('First Name: ').appendTo(editContactForm);
     $('<input>').attr({type:'text', name:'firstname', value: contact.firstname}).appendTo(editContactForm);
     $('<label>').text('Last Name: ').appendTo(editContactForm);
@@ -55,7 +57,7 @@ $(function() {
     $('<input>').attr({type:'hidden', name:'id', value: contact.id}).appendTo(editContactForm);
     $('<button>').data('id', contact.id).attr({type: 'submit', class: 'submit'}).text('Submit').appendTo(editContactForm);
     console.log(contact.id);
-    $(editContactForm).appendTo(formDiv);
+    $(formDiv).html(editContactForm);
   }
 
   $('#contactListTable').on('click', 'button.edit', function() {
@@ -79,11 +81,25 @@ $(function() {
         console.log(response);
       }
     })
+    .done(editContactInList)
     .done(function() {
-      editContactForm.hide();
+      $(editContactForm).empty();
     });
     return false;
   });
+
+  function editContactInList(contact) {
+    var contactRow = $('<tr>').data('id', contact.id).attr('id', 'contact' + contact.id);
+    $('<td>').text(contact.firstname + ' ' + contact.lastname).attr('class','name').appendTo(contactRow); 
+    $('<td>').text(contact.email).attr('class', 'email').appendTo(contactRow);
+    $('<td>').html('<button class="delete">&times;</button>').appendTo(contactRow);
+    $('<td>').html('<button class="edit">EDIT CONTACT</button>').appendTo(contactRow);
+    var oldRow = $('#contact' + contact.id);
+    console.log(oldRow);
+    console.log(contactRow);
+    $(oldRow).replaceWith(contactRow);
+  }
+
 
   createButton.on('click' , function() {
     $(newContactForm).toggle();
