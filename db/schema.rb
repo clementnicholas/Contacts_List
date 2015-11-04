@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20151103220939) do
   end
 
   create_table "numbers", force: :cascade do |t|
-    t.string   "type"
+    t.string   "phone_type"
     t.string   "phone_number"
     t.integer  "contact_id"
     t.datetime "created_at"

@@ -10,7 +10,7 @@ class CreateContacts < ActiveRecord::Migration
     end
 
     create_table :numbers do |t|
-      t.string :type
+      t.string :phone_type
       t.string :phone_number
       t.references :contact
       t.timestamps
