@@ -1,3 +1,8 @@
+THIS IS A CONTACT LIST BUILT IN 4 DIFFERENT VERSIONS:
+The versions use ruby, active record, and then sinatra/ajax/js where all the html is rendered via javascript and jquery. 
+
+
+
 Sinatra
 =============
 
